@@ -174,7 +174,7 @@ if (!isset($_SESSION['usuario'])) {
     <!-- contact section design -->
     <section class="contact" id="contactanos">
         <h2 class="heading">Contactame y <span>Pregunta</span> <span class="animate scroll" style="--i:1;"></span></h2>
-        <form action="https://formspree.io/f/xleqgjyr" method="post">
+        <form action="" method="post">
             <div class="input-box">
                 <div class="input-field">
                     <input type="text" placeholder="Nombre Completo" name="nombre" required>
