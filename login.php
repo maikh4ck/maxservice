@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$conexion = new mysqli('localhost', 'root', 'A31543154a.', 'registro');
+$conexion = new mysqli('localhost', 'root', 'contraseña', 'registro');
 
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
