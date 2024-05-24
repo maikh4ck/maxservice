@@ -1,6 +1,6 @@
 <?php
 // Conexión a la base de datos (reemplaza con tus propios datos)
-$conexion = new mysqli('localhost', 'root', 'contraseña', 'registro');
+$conexion = new mysqli('localhost', 'michael', 'A31543154a.', 'registro');
 
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
@@ -14,18 +14,21 @@ $contraseña = $_POST['contraseña'];
 // Cifrar la contraseña con bcrypt
 $contraseña_cifrada = password_hash($contraseña, PASSWORD_DEFAULT);
 
-// Consulta SQL para verificar si el usuario ya existe
-$consulta_existencia = "SELECT * FROM usuarios WHERE usuario='$usuario'";
-$resultado_existencia = $conexion->query($consulta_existencia);
+// Consulta SQL para verificar si el usuario ya existe, usando prepared statement
+$stmt = $conexion->prepare("SELECT * FROM usuarios WHERE usuario = ?");
+$stmt->bind_param("s", $usuario);
+$stmt->execute();
+$resultado_existencia = $stmt->get_result();
 
 if ($resultado_existencia->num_rows > 0) {
     // El usuario ya existe, mostrar un mensaje emergente
     echo '<script>alert("El usuario ya existe. Por favor, elige otro nombre de usuario."); window.location.href = "login1.php";</script>';
 } else {
-    // El usuario no existe, realizar la inserción en la base de datos
-    $consulta = "INSERT INTO usuarios (usuario, email, contraseña) VALUES ('$usuario', '$email', '$contraseña_cifrada')";
-    
-    if ($conexion->query($consulta) === TRUE) {
+    // El usuario no existe, realizar la inserción en la base de datos, usando prepared statement
+    $stmt_insert = $conexion->prepare("INSERT INTO usuarios (usuario, email, contraseña) VALUES (?, ?, ?)");
+    $stmt_insert->bind_param("sss", $usuario, $email, $contraseña_cifrada);
+
+    if ($stmt_insert->execute() === TRUE) {
         // Usuario insertado correctamente, redirigir a la página principal
         header("Location: index.php");
         exit();
@@ -36,5 +39,8 @@ if ($resultado_existencia->num_rows > 0) {
     }
 }
 
+// Cerrar las declaraciones y la conexión
+$stmt->close();
+$stmt_insert->close();
 $conexion->close();
 ?>
