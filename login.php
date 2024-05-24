@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$conexion = new mysqli('localhost', 'root', 'contraseña', 'registro');
+$conexion = new mysqli('localhost', 'michael', 'A31543154a.', 'registro');
 
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
@@ -10,8 +10,11 @@ if ($conexion->connect_error) {
 $usuario = $_POST['usuario'];
 $contraseña = $_POST['contraseña']; // No hasheamos la contraseña aquí
 
-$consulta = "SELECT * FROM usuarios WHERE usuario = '$usuario'";
-$resultado = $conexion->query($consulta);
+// Preparamos la consulta SQL para evitar SQL injection
+$stmt = $conexion->prepare("SELECT * FROM usuarios WHERE usuario = ?");
+$stmt->bind_param("s", $usuario);
+$stmt->execute();
+$resultado = $stmt->get_result();
 
 if ($resultado->num_rows > 0) {
     $fila = $resultado->fetch_assoc();
@@ -34,5 +37,3 @@ if ($resultado->num_rows > 0) {
 
 $conexion->close();
 ?>
-
-
